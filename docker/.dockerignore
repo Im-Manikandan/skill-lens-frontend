@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+*.log
+.git
+.gitignore
+Dockerfile*
+coverage
+dist
+*.md
+*.ps1
+*.map
+# Keep src & config files so builder stage can compile

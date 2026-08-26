@@ -1,0 +1,12 @@
+{
+  "name": "@devopsthink/react-security-util",
+  "version": "1.5.9",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2"
+  }
+}

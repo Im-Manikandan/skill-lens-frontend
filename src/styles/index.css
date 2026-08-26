@@ -1,0 +1,18 @@
+@import "tailwindcss" prefix(tw);
+
+@theme {
+  --color-sl-main: var(--sl-bg-main);
+  --color-sl-surface: var(--sl-bg-surface);
+  --color-sl-surface-hover: var(--sl-bg-surface-hover);
+  --color-sl-muted: var(--sl-bg-muted);
+  --color-sl-deep: var(--sl-bg-deep);
+  --color-sl-subtle: var(--sl-bg-subtle);
+  --color-sl-overlay: var(--sl-bg-overlay);
+  --color-sl-border: var(--sl-border-subtle);
+  --color-sl-green: var(--sl-accent-green);
+  --color-sl-brand: var(--sl-accent-brand);
+  --color-sl-brand-hover: var(--sl-accent-brand-hover);
+  --color-sl-red: var(--sl-accent-red);
+  --color-sl-amber: var(--sl-accent-amber);
+  --color-sl-emerald: var(--sl-accent-emerald);
+}

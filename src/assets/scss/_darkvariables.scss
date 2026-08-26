@@ -1,0 +1,169 @@
+/*******************/
+// Theme Fonts
+/********************/
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700');
+$font-family-sans-serif: 'Montserrat', sans-serif;
+/*******************/
+// Theme Colors
+/********************/
+$primary: #745af2;
+$info: #398bf7;
+$danger: #ef5350;
+$success: #06d79c;
+$warning: #ffb22b;
+$dark: rgba(15, 23, 42, 0.7);
+$light: #303a45;
+$secondary: #001e3c;
+
+$theme-colors: (
+  'primary': $primary,
+  'secondary': $secondary,
+  'success': $success,
+  'info': $info,
+  'warning': $warning,
+  'danger': $danger,
+  'light': $light,
+  'dark': $dark,
+  'light-primary': #1e446d,
+  'light-success': #1c656e,
+  'light-info': #312578,
+  'light-warning': #5a5446,
+  'light-danger': #662b36,
+  'light-secondary': #121927,
+);
+// scss-docs-start gray-color-variables
+$white: rgba(15, 23, 42, 0.7) !default;
+$gray-100: rgba(15, 23, 42, 0.7) !default;
+$gray-200: #303a45 !default;
+$gray-300: #475059 !default;
+$gray-400: #5e666e !default;
+$gray-500: #757c83 !default;
+$gray-600: #8c9298 !default;
+$gray-700: #a3a7ac !default;
+$gray-800: #babdc1 !default;
+$gray-900: #e6e9ec !default;
+$black: rgba(255, 255, 255, 0.9) !default;
+
+/*******************/
+// Theme Text Contrast
+/********************/
+$min-contrast-ratio: 1.6 !default;
+$enable-shadows: false !default;
+$font-size-base: 0.875rem !default;
+
+/*******************/
+// Theme body bg & text color
+/********************/
+$body-bg: #0b1120 !default;
+$body-color: $gray-900 !default;
+$btn-focus-box-shadow: 0;
+
+// heading fonts setting
+$h1-font-size: 36px !default;
+$h2-font-size: 24px !default;
+$h3-font-size: 21px !default;
+$h4-font-size: 18px !default;
+$h5-font-size: 16px !default;
+$h6-font-size: 14px !default;
+
+// Font size
+$font-sizes: (
+  1: 36px,
+  2: 24px,
+  3: 21px,
+  4: 18px,
+  5: 16px,
+  6: 14px,
+  7: 12px,
+);
+
+/*******************/
+// Theme common variable
+/********************/
+$border-radius: 0.3rem !default;
+$box-shadow: 0;
+$headings-font-weight: 400 !default;
+
+$font-size-base: 1rem !default; // Assumes the browser default, typically `16px`
+
+$font-weight-light: 400 !default;
+$font-weight-normal: 500 !default;
+$font-weight-bold: 600 !default;
+$font-weight-base: $font-weight-light !default;
+
+$h5-font-size: $font-size-base * 1.1 !default;
+$card-border-width: 0 !default;
+$card-box-shadow: $box-shadow !default;
+$card-spacer-y: 1.25rem !default;
+$card-spacer-x: 1.25rem !default;
+$grid-gutter-width: 1.85rem !default;
+// $headings-color: $gray-900 !default;
+
+$input-bg: $white !default;
+$badge-font-weight: 300 !default;
+$badge-padding-y: 0.35em !default;
+$badge-padding-x: 0.7em !default;
+$badge-pill-padding-x: 0.7em !default;
+$badge-pill-padding-y: 1em !default;
+
+$card-bg: $white;
+$form-range-track-bg:$gray-300;
+$badge-color: $black;
+$list-group-bg:$white;
+$table-bg:$white;
+
+// Progress bars
+$progress-height: 6px !default;
+
+/*******************/
+// Theme btn
+/********************/
+$btn-focus-width: 0px;
+body .btn {
+  color: $black;
+  &:hover,
+  &.active,
+  &.disabled,
+  &:focus {
+    color: $black;
+  }
+}
+$btn-box-shadow: none !default;
+/*******************/
+// Theme sidebar width
+/********************/
+$sidebarWidth: 260px;
+$sidebartext: #ffffff;
+$sidebartextlight: rgba(255, 255, 255, 0.6);
+$miniSidebarWidth: 80px;
+
+$topbarHeight: 60px;
+
+$dropdown-border-width: 0 !default;
+$dropdown-box-shadow: $box-shadow !default;
+$dropdown-link-hover-bg: $gray-100 !default;
+
+$enable-negative-margins: true;
+
+$table-cell-padding-y: 0.75rem !default;
+$table-cell-padding-x: 0.75rem !default;
+
+/*******************/
+// CSS Custom Properties for use in JSX inline styles
+/********************/
+:root {
+  --sl-bg-main: #0b1120;
+  --sl-bg-surface: #1f2937;
+  --sl-bg-surface-hover: #374151;
+  --sl-bg-muted: #4b5563;
+  --sl-bg-deep: #111827;
+  --sl-bg-overlay: rgba(0, 0, 0, 0.6);
+  --sl-bg-subtle: rgba(255, 255, 255, 0.04);
+  --sl-border-subtle: rgba(255, 255, 255, 0.08);
+  --sl-accent-green: #34d399;
+  --sl-accent-brand: #8fb329;
+  --sl-accent-brand-hover: #7a9a23;
+  --sl-accent-red: #f87171;
+  --sl-accent-amber: #f59e0b;
+  --sl-accent-emerald: #10b981;
+}

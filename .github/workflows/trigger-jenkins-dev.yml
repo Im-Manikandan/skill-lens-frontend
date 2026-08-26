@@ -1,0 +1,64 @@
+name: Trigger Jenkins Build (Dev)
+
+on:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: jenkins-build-dev-${{ github.repository }}
+  cancel-in-progress: true
+
+jobs:
+  trigger-jenkins-dev:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger Jenkins Dev build
+        run: |
+          JENKINS_URL="${{ secrets.JENKINS_URL }}"
+          JENKINS_USER="${{ secrets.JENKINS_USER }}"
+          JENKINS_API_TOKEN="${{ secrets.JENKINS_API_TOKEN }}"
+
+          if [[ -z "${JENKINS_URL}" || -z "${JENKINS_USER}" || -z "${JENKINS_API_TOKEN}" ]]; then
+            echo "Missing Jenkins credentials / URL. Make sure repository secrets JENKINS_URL, JENKINS_USER, and JENKINS_API_TOKEN are set."
+            exit 1
+          fi
+
+          JOB_PATH="docker/job/skill-lens-react-dev"
+
+          echo "Triggering Jenkins Dev build..."
+          echo "  Job:  ${JOB_PATH}"
+          echo "  Commit: ${GITHUB_SHA}"
+
+          CRUMB_JSON=$(curl -s --user "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${JENKINS_URL}/crumbIssuer/api/json" || true)
+          CRUMB_HEADER=""
+          if [[ -n "${CRUMB_JSON}" && "${CRUMB_JSON}" != *"Not Found"* ]]; then
+            CRUMB_HEADER=$(python3 -c 'import json,sys; d=json.load(sys.stdin); print(f"{d.get("crumbRequestField")}: {d.get("crumb")}")' <<< "${CRUMB_JSON}" 2>/dev/null || true)
+          fi
+
+          CURL_ARGS=(
+            -s -o /tmp/jenkins_response.txt -w "%{http_code}"
+            -X POST
+            "${JENKINS_URL}/job/${JOB_PATH}/build"
+            --user "${JENKINS_USER}:${JENKINS_API_TOKEN}"
+            --connect-timeout 10
+            --max-time 30
+          )
+
+          if [[ -n "${CRUMB_HEADER}" ]]; then
+            CURL_ARGS+=(--header "${CRUMB_HEADER}")
+          fi
+
+          HTTP_CODE=$(curl "${CURL_ARGS[@]}")
+
+          echo "  HTTP Status: ${HTTP_CODE}"
+
+          if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "200" ]; then
+            echo "Jenkins Dev build triggered successfully!"
+          else
+            echo "Failed to trigger Jenkins Dev build"
+            echo "  Response: $(cat /tmp/jenkins_response.txt 2>/dev/null)"
+            exit 1
+          fi

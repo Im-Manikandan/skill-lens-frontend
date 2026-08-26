@@ -1,0 +1,130 @@
+# .github/workflows/trigger-jenkins.yml
+#
+# Triggers Jenkins build ONLY when a new tag is pushed.
+# Tags must match semver pattern: X.Y.Z (e.g., 0.0.1, 1.2.3)
+#
+# Developer flow:
+#   git tag 0.0.1
+#   git push origin 0.0.1
+#
+# Required GitHub Secrets (set at org level or per repo):
+#   JENKINS_URL       - e.g., https://jenkins.yourdomain.com
+#   JENKINS_USER      - Jenkins username
+#   JENKINS_API_TOKEN - Jenkins API token (Users -> Configure -> API Token)
+#
+# Optional Secrets:
+#   JENKINS_BUILD_TOKEN - Per-job auth token (if configured in Jenkins job)
+#   TEAMS_WEBHOOK_URL   - Microsoft Teams webhook for notifications
+
+name: Trigger Jenkins Build
+
+on:
+  push:
+    tags:
+      - '[0-9]*.[0-9]*.[0-9]*'
+
+concurrency:
+  group: jenkins-build-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  trigger-jenkins:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Extract info
+        id: info
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+
+          echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "repo=${REPO_NAME}" >> $GITHUB_OUTPUT
+          echo "actor=${GITHUB_ACTOR}" >> $GITHUB_OUTPUT
+          echo "sha_short=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+          echo "Repository: ${REPO_NAME}"
+          echo "Tag: ${TAG_NAME}"
+          echo "Pushed by: ${GITHUB_ACTOR}"
+
+      - name: Validate tag format
+        run: |
+          TAG="${{ steps.info.outputs.tag }}"
+
+          if [[ ! "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid tag format: ${TAG}"
+            echo "Expected: 0.0.1, 1.2.3, etc."
+            exit 1
+          fi
+
+          echo "Tag format valid: ${TAG}"
+
+      - name: Trigger Jenkins build
+        id: trigger
+        run: |
+          REPO="${{ steps.info.outputs.repo }}"
+          TAG="${{ steps.info.outputs.tag }}"
+          JENKINS_URL="${{ secrets.JENKINS_URL }}"
+          JENKINS_USER="${{ secrets.JENKINS_USER }}"
+          JENKINS_API_TOKEN="${{ secrets.JENKINS_API_TOKEN }}"
+
+          JOB_PATH="react/job/s3_publish/job/skill-lens-react"
+
+          echo "Triggering Jenkins build..."
+          echo "  Job:  ${JOB_PATH}"
+          echo "  Tag:  ${TAG}"
+
+          HTTP_CODE=$(curl -s -o /tmp/jenkins_response.txt -w "%{http_code}" \
+            -X POST \
+            "${JENKINS_URL}/job/${JOB_PATH}/build" \
+            --user "${JENKINS_USER}:${JENKINS_API_TOKEN}" \
+            --connect-timeout 10 \
+            --max-time 30)
+
+          echo "  HTTP Status: ${HTTP_CODE}"
+
+          if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "200" ]; then
+            echo "Jenkins build triggered successfully!"
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Failed to trigger Jenkins build"
+            echo "  Response: $(cat /tmp/jenkins_response.txt 2>/dev/null)"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Notify Teams (optional)
+        if: always() && env.TEAMS_WEBHOOK_URL != ''
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          REPO="${{ steps.info.outputs.repo }}"
+          TAG="${{ steps.info.outputs.tag }}"
+          ACTOR="${{ steps.info.outputs.actor }}"
+          STATUS="${{ steps.trigger.outputs.status }}"
+
+          if [ "$STATUS" = "success" ]; then
+            COLOR="00FF00"
+            TITLE="Jenkins Build Triggered"
+          else
+            COLOR="FF0000"
+            TITLE="Jenkins Build Trigger Failed"
+          fi
+
+          curl -s -X POST "${TEAMS_WEBHOOK_URL}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"@type\": \"MessageCard\",
+              \"summary\": \"${TITLE}\",
+              \"themeColor\": \"${COLOR}\",
+              \"title\": \"${TITLE}\",
+              \"sections\": [{
+                \"facts\": [
+                  {\"name\": \"Repository\", \"value\": \"${REPO}\"},
+                  {\"name\": \"Tag\", \"value\": \"${TAG}\"},
+                  {\"name\": \"Triggered by\", \"value\": \"${ACTOR}\"},
+                  {\"name\": \"Status\", \"value\": \"${STATUS}\"}
+                ]
+              }]
+            }" || true

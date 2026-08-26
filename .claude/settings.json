@@ -1,0 +1,54 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(netstat -ano)",
+      "Bash(curl -s http://localhost:8000/skill-lens-service/routes/v1/openapi.json)",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s http://localhost:8000/skill-lens-service/routes/v1/openapi.json -o /tmp/openapi.json)",
+      "Read(//tmp/**)",
+      "Bash(nohup .venv/Scripts/python.exe application.py)",
+      "Bash(disown)",
+      "Bash(.venv/Scripts/python.exe -m py_compile routes/infographic_route.py)",
+      "Bash(find /f -maxdepth 3 -iname \"*skill-lens*\")",
+      "Read(//c/Users/user/**)",
+      "Bash(find /f -maxdepth 3 -iname \"*skill_lens*\")",
+      "mcp__postgres__query",
+      "Bash(curl -s -m 20 -X POST \"http://localhost:8000/skill-lens-service/routes/v1/search/warmup?client_id=2&industry_id=2&source=talent\")",
+      "Bash(curl -s -m 30 -X POST \"http://localhost:8000/skill-lens-service/routes/v1/search/semantic\" -H \"Content-Type: application/json\" -d '{\"query\":\"python developer\",\"client_id\":2,\"industry_id\":2,\"source\":\"talent\"}')",
+      "Bash(curl -s -m 30 -X POST \"http://localhost:8000/skill-lens-service/routes/v1/search/skill-framework\" -H \"Content-Type: application/json\" -d '{\"skill_family\":\"Artificial Intelligence & Machine Learning\",\"skill_group\":\"Model Evaluation & Responsible AI\",\"competency\":\"Deploy artificial intelligence practices\",\"client_id\":2,\"industry_id\":2,\"source\":\"talent\"}')",
+      "Bash(curl -s -m 10 -X POST \"http://localhost:8000/skill-lens-service/routes/v1/search/restart\")",
+      "Bash(curl -s -m 30 -X POST \"http://localhost:8000/skill-lens-service/routes/v1/search/warmup?client_id=2&industry_id=2&source=talent\")",
+      "Bash(./.venv/Scripts/python -c \"import faiss; print\\(faiss.__file__\\); print\\(faiss.__version__ if hasattr\\(faiss,'__version__'\\) else 'no version'\\); print\\([a for a in dir\\(faiss\\) if 'Index' in a][:20]\\)\")",
+      "Bash(./.venv/Scripts/python -c \"import faiss; print\\(faiss.__path__ if hasattr\\(faiss,'__path__'\\) else 'no path'\\); print\\(faiss\\)\")",
+      "Bash(uv --version)",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"ProcessId=1159 or ProcessId=1156\")",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Get-CimInstance Win32_Process -Filter \"ProcessId=$_\" | Select-Object ProcessId,ParentProcessId,CommandLine })",
+      "PowerShell(Stop-Process -Id 9220 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Id 8396 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue)",
+      "Bash(tee /tmp/uv_sync_full.log)",
+      "Bash(./.venv/Scripts/python -c ' *)",
+      "Bash(./.venv/Scripts/python -c \"import psycopg; print\\('psycopg ok', psycopg.__version__\\)\")",
+      "Bash(./.venv/Scripts/python -c \"import sentence_transformers; print\\('st ok'\\)\")",
+      "Bash(curl -s -m 5 -o /dev/null -w \"HTTP %{http_code}\\\\n\" https://pypiserver.thinktalentws48.click/simple/faiss-cpu/)",
+      "Bash(env)",
+      "Bash(curl -s -m 8 -o /dev/null -w \"HTTP %{http_code} \\(time %{time_total}s\\)\\\\n\" \"https://devops:13972684@pypiserver.thinktalentws48.click/simple/faiss-cpu/\")",
+      "Bash(curl -s -m 8 -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://devops:13972684@pypiserver.thinktalentws48.click/simple/\")",
+      "PowerShell(Start-Process -FilePath \"F:\\\\backend\\\\skill-lens-service\\\\.venv\\\\Scripts\\\\python.exe\" -ArgumentList \"application.py\" -WorkingDirectory \"F:\\\\backend\\\\skill-lens-service\" -WindowStyle Hidden)",
+      "Bash(curl -s -m 5 http://localhost:8000/skill-lens-service/routes/v1/search/health)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-readme-update.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
