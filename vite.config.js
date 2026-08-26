@@ -8,7 +8,7 @@ import {visualizer} from 'rollup-plugin-visualizer';
 import viteCompression from 'vite-plugin-compression';
 // https://vitejs.dev/config/
 export default defineConfig({
-    base: '/skill-lens',
+    base: '/',
     plugins: [
         svgr(),
         tailwindcss(),
