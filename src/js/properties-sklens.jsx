@@ -10,7 +10,7 @@ const config = {
 
 };
 properties.set("serviceDomain", config.serviceDomain);
-properties.set("serviceUrl", "https://skill-lens-backend.onrender.com");
+properties.set("serviceUrl", "https://skill-lens-backend.onrender.com/routes/v1");
 properties.set("domainUrl", config.domainUrl);
 
 // Sentry Monitoring Configuration (replaced by CI/CD pipeline)
@@ -18,3 +18,4 @@ properties.set("sentry_dsn", "{{SENTRY_DSN}}");
 properties.set("sentry_release", "{{SENTRY_RELEASE}}");
 
 export default properties;
+
