@@ -115,7 +115,7 @@ const LoginClient = () => {
                   { email: fields.email, password: fields.password },
                   {
                     onSuccess: () => {
-                      window.location.replace(`${import.meta.env.BASE_URL}/auth/client/authorized`);
+                      window.location.replace('/auth/client/authorized');
                     },
                   },
                 );
@@ -286,3 +286,4 @@ const LoginClient = () => {
 };
 
 export default LoginClient;
+

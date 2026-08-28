@@ -115,7 +115,7 @@ const LoginAdmin = () => {
                   { email: fields.email, password: fields.password },
                   {
                     onSuccess: () => {
-                      window.location.replace(`${import.meta.env.BASE_URL}/auth/admin/authorized`);
+                      window.location.replace('/auth/admin/authorized');
                     },
                   },
                 );
@@ -286,3 +286,4 @@ const LoginAdmin = () => {
 };
 
 export default LoginAdmin;
+
