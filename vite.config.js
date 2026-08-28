@@ -5,7 +5,6 @@ import fs from 'fs/promises';
 import svgr from '@svgr/rollup';
 import tailwindcss from '@tailwindcss/vite';
 import {visualizer} from 'rollup-plugin-visualizer';
-import viteCompression from 'vite-plugin-compression';
 // https://vitejs.dev/config/
 export default defineConfig({
    base: '/',
@@ -27,31 +26,6 @@ export default defineConfig({
             brotliSize: true,
         }),
         // Pre-compress assets (gzip + brotli) only when COMPRESS=true
-        process.env.COMPRESS === 'true' && viteCompression({
-            algorithm: 'brotliCompress',
-            ext: '.br',
-            compressionOptions: {level: 11},
-            deleteOriginFile: false,
-            filter: f => {
-                const norm = f.replace(/\\/g, '/').replace(/^\.?\/?(build\/)?/, '');
-                const ignored = ['index.html', 'security.js', 'env.js', 'favicon.ico'];
-                const isIgnored = ignored.some(name => norm === name || norm.endsWith('/' + name));
-                const should = /\.(js|mjs|json|css|html|svg|ico)$/.test(f) && !isIgnored;
-                return should;
-            },
-        }),
-        process.env.COMPRESS === 'true' && viteCompression({
-            algorithm: 'gzip',
-            ext: '.gz',
-            deleteOriginFile: true,
-            filter: f => {
-                const norm = f.replace(/\\/g, '/').replace(/^\.?\/?(build\/)?/, '');
-                const ignored = ['index.html', 'security.js', 'env.js', 'favicon.ico'];
-                const isIgnored = ignored.some(name => norm === name || norm.endsWith('/' + name));
-                const should = /\.(js|mjs|json|css|html|svg|ico)$/.test(f) && !isIgnored;
-                return should;
-            },
-        }),
     ].filter(Boolean),
     resolve: {
         alias: {
@@ -106,3 +80,6 @@ export default defineConfig({
 
 
 });
+
+
+

@@ -7,7 +7,7 @@
     "dev": "vite --port 3000 --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --port 3000 --host 0.0.0.0",
-    "build:sklens": "cross-env VITE_APP_ENV=sklens COMPRESS=true vite build --mode sklens",
+    "build:sklens": "cross-env VITE_APP_ENV=sklens COMPRESS=false vite build --mode sklens",
     "build:analyze": "cross-env ANALYZE=true vite build",
     "lint:report": "eslint . -f html -o eslint-report.html || true",
     "lint:security:report": "eslint . -f html -o eslint-security-report.html || true"
@@ -89,3 +89,4 @@
     "nth-check": "2.1.1"
   }
 }
+
