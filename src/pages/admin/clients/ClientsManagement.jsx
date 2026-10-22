@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
-  Plus, Edit, Trash2, Building2,
+  Plus, Edit, Trash2, Building2, Bot,
   Search, Hash, Factory, Users, Layers, GitBranch,
   BookOpen, XCircle, FolderPlus, CreditCard, Settings,
   CheckCircle2, AlertTriangle,
@@ -16,6 +16,7 @@ import {
 } from 'reactstrap';
 import BrandButton from '../../../components/buttons/BrandButton.jsx';
 import ClientsController from '../../../api/admin/clients-controller.jsx';
+import ProfilesController from '../../../api/admin/profiles-controller.jsx';
 import ActionButton from '../components/ActionButton.jsx';
 import StatCard from '../components/StatCard.jsx';
 import GradientAvatar, { getGradientPair } from '../../../components/admin/GradientAvatar.jsx';
@@ -49,6 +50,16 @@ function MetricChip({ icon: Icon, label, value, color }) {
       <span style={{ fontSize: 13, color: '#e2e8f0', fontWeight: 700 }}>{value}</span>
     </div>
   );
+}
+
+function ClientProfileCount({ clientId }) {
+  const { data: profiles } = useQuery({
+    queryKey: ['profiles', String(clientId)],
+    queryFn: () => ProfilesController.listProfiles(clientId),
+    refetchOnMount: 'always',
+  });
+
+  return <MetricChip icon={Users} label="Profiles" value={Array.isArray(profiles) ? profiles.length : '—'} color="#60a5fa" />;
 }
 
 // Plan -> Framework -> Dimension Config -> Profiles can be done/changed in
@@ -469,9 +480,7 @@ export default function ClientsManagement() {
 
                         {/* Metrics chips */}
                         <div className="tw:flex tw:items-center tw:gap-2 tw:flex-wrap">
-                          {client.profiles_count !== undefined && (
-                            <MetricChip icon={Users} label="Profiles" value={client.profiles_count} color="#60a5fa" />
-                          )}
+                          <ClientProfileCount clientId={client.id} />
                           {client.skill_families_count !== undefined && (
                             <MetricChip icon={Layers} label="Families" value={client.skill_families_count} color="#f472b6" />
                           )}
@@ -491,6 +500,7 @@ export default function ClientsManagement() {
                           <ActionButton icon={Settings} color="#a78bfa" onClick={() => navigate(`/admin/config-hub/${client.id}`)} title="Configuration" />
                           <ActionButton icon={Users} color="#B3D335" onClick={() => navigate(`/admin/profiles/${client.id}`)} title="View profiles" />
                           <ActionButton icon={Edit} color="#60a5fa" onClick={() => setEditingClient(client)} title="Edit client" />
+                          <ActionButton icon={Bot} color="#a78bfa" onClick={() => navigate(`/admin/ai-usage?company_id=${encodeURIComponent(client.id)}`)} title="AI Usage & Cost" />
                           <ActionButton icon={Trash2} color="#ef4444" onClick={() => handleDelete(client.id)} title="Delete client" />
                         </div>
                       </div>

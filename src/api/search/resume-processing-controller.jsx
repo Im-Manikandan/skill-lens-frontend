@@ -124,8 +124,17 @@ function startJob(files, clientId, industryId, folderLabel) {
           job.profiles.push(profile);
         }
       } catch (err) {
-        console.error(`Parsing failed for "${file.name}":`, err);
+        console.warn('Resume parsing failed', {status: err?.status});
         job.failed += 1;
+        job.error = err;
+        if (err?.status === 503) {
+          job.error = new Error('AI service is temporarily unavailable. Please try again.');
+          job.completed += 1;
+          job.status = 'failed';
+          job.current_file = null;
+          job.eta_seconds = 0;
+          return;
+        }
       }
       job.completed += 1;
       job.eta_seconds = Math.round((total - job.completed) * 1.2);
@@ -202,6 +211,7 @@ const ResumeProcessingController = {
       failed: job.failed,
       current_file: job.current_file,
       eta_seconds: job.eta_seconds,
+      error: job.error ? String(job.error.message || job.error).replace(/sk-[A-Za-z0-9_*.-]+/g, "[REDACTED]").slice(0, 600) : null,
     };
   },
 

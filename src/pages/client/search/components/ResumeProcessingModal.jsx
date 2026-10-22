@@ -16,7 +16,7 @@ function formatEta(seconds) {
 }
 
 export default function ResumeProcessingModal({
-  isOpen, status, progress, folderName, jobId, onCancel, onContinue, onClose,
+  isOpen, status, progress, error, folderName, jobId, onCancel, onContinue, onClose,
 }) {
   const total = progress?.total ?? 0;
   const completed = progress?.completed ?? 0;
@@ -275,7 +275,8 @@ export default function ResumeProcessingModal({
                 <strong style={{ color: isCancelled ? '#f59e0b' : '#ef4444' }}>
                   {isCancelled ? 'Processing was cancelled.' : 'Resume processing failed.'}
                 </strong>
-                {' '}{completed} of {total} resumes were processed before stopping.
+                {' '}{Math.max(0, completed - failed)} of {total} resumes parsed successfully; {failed} failed.
+                {isFailed && error && <p role="alert" style={{marginTop:8,marginBottom:0,overflowWrap:'anywhere'}}>{error.message || String(error)}</p>}
               </div>
             </div>
           </motion.div>

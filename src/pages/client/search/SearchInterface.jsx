@@ -227,14 +227,25 @@ export default function SearchInterface() {
   };
 
   const deleteBatchMutation = useMutation({
-    mutationFn: (batchId) => ProfilesController.deleteBatch(selectedClientId, batchId),
+    mutationFn: async (batchId) => {
+      try { return await ProfilesController.deleteBatch(selectedClientId, batchId); }
+      catch (error) {
+        // A stale local upload may already have been deleted on the server.
+        if (error?.status === 404) return;
+        throw error;
+      }
+    },
     onSuccess: (_data, batchId) => {
-      queryClient.invalidateQueries({ queryKey: ['recruitment-batches', selectedClientId, selectedIndustryId] });
+      resumeProcessing.removeBatch(batchId);
+      queryClient.setQueriesData({ queryKey: ['recruitment-batches', selectedClientId] },
+        previous => previous?.filter(batch => batch.batch_id !== batchId));
+      queryClient.invalidateQueries({ queryKey: ['recruitment-batches', selectedClientId] });
+      if (!allProfilesSelected && selectedBatchIds.length === 1 && selectedBatchIds[0] === batchId) setAllProfilesSelected(true);
       setSelectedBatchIds((prev) => prev.filter((id) => id !== batchId));
       clearResultsState();
     },
   });
-  const handleDeleteBatch = (batchId) => deleteBatchMutation.mutate(batchId);
+  const handleDeleteBatch = (batchId) => deleteBatchMutation.mutateAsync(batchId);
 
   // After a folder upload finishes, refresh the persisted batch list and
   // auto-select the newly created batch so only its profiles show.
@@ -1435,6 +1446,7 @@ export default function SearchInterface() {
         isOpen={showProcessingModal}
         status={resumeProcessing.status}
         progress={resumeProcessing.progress}
+        error={resumeProcessing.error}
         folderName={resumeProcessing.folderName}
         jobId={resumeProcessing.jobId}
         onCancel={async () => { await resumeProcessing.cancel(); }}

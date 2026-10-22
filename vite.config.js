@@ -1,6 +1,6 @@
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
-import {resolve} from 'path';
+import {fileURLToPath} from 'url';
 import fs from 'fs/promises';
 import svgr from '@svgr/rollup';
 import tailwindcss from '@tailwindcss/vite';
@@ -8,6 +8,15 @@ import {visualizer} from 'rollup-plugin-visualizer';
 // https://vitejs.dev/config/
 export default defineConfig({
    base: '/',
+    server: {
+        proxy: {
+            '/api': {
+                target: 'http://127.0.0.1:8000',
+                changeOrigin: true,
+                rewrite: path => path.replace(/^\/api/, '/routes/v1'),
+            },
+        },
+    },
     plugins: [
         svgr(),
         tailwindcss(),
@@ -29,7 +38,7 @@ export default defineConfig({
     ].filter(Boolean),
     resolve: {
         alias: {
-            src: resolve(__dirname, 'src'),
+            src: fileURLToPath(new URL('./src', import.meta.url)),
         },
         dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
     },

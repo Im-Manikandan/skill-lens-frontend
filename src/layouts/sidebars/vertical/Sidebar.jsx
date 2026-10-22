@@ -10,7 +10,6 @@ import ClientSidebarData from '../sidebardata/ClientSidebarData.jsx';
 import NavItemContainer from './NavItemContainer';
 import NavSubMenu from './NavSubMenu';
 import SidebarUserProfile from './SidebarUserProfile';
-import useMyClients from '../../../hooks/query/useMyClients.jsx';
 
 const Sidebar = () => {
   // Route & Redux State
@@ -37,12 +36,7 @@ const Sidebar = () => {
   const clientName = clientInfo?.client_name ?? '';
 
   // Sidebar Data Selection & Filtering
-  const {data: clients = []} = useMyClients();
-  const rawSidebarData = userType === 'client' ? ClientSidebarData : AdminSidebarData;
-  // Hide "Switch Account" when user has only one client
-  const sidebarData = userType === 'client' && clients.length <= 1
-    ? rawSidebarData.filter((item) => item.href !== '/client/select')
-    : rawSidebarData;
+  const sidebarData = userType === 'client' ? ClientSidebarData : AdminSidebarData;
 
   return (
     <div className={`sidebarBox shadow bg-${activeBg} ${isFixed ? 'fixedSidebar' : ''}`}>

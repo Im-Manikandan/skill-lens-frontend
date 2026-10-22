@@ -41,6 +41,7 @@ export default function useResumeProcessing() {
       try {
         const data = await ResumeProcessingController.getJobStatus(id);
         setStatus(data.status);
+        setError(data.error ? new Error(data.error) : null);
         setProgress({
           total: data.total, completed: data.completed, failed: data.failed,
           current_file: data.current_file, eta_seconds: data.eta_seconds,
@@ -114,6 +115,14 @@ export default function useResumeProcessing() {
     setError(null);
   }, [stopPolling]);
 
+  const removeBatch = useCallback((jobId) => {
+    setBatches(prev => prev.filter(batch => batch.jobId !== jobId));
+    if (currentJobId === jobId) {
+      reset();
+      setFolderName('');
+    }
+  }, [currentJobId, reset]);
+
   const isProcessing = status === 'processing';
   const isComplete = status === 'completed';
   // Search stays locked only while actively processing.
@@ -121,6 +130,6 @@ export default function useResumeProcessing() {
 
   return {
     jobId: currentJobId, status, progress, folderName, error,
-    batches, start, cancel, reset, isProcessing, isComplete, isLocked,
+    batches, start, cancel, reset, removeBatch, isProcessing, isComplete, isLocked,
   };
 }

@@ -60,6 +60,7 @@ export default function ProfilesManagement() {
       setUploadResult(result);
       queryClient.refetchQueries({ queryKey: ['profiles', clientId] });
       queryClient.refetchQueries({ queryKey: ['clients'] });
+      queryClient.invalidateQueries({ queryKey: ['ai-dashboard', 'admin'] });
       // The backend upload endpoint already busts its own in-memory search
       // cache for this client (see upload_profiles -> invalidate_cache).
       // Just tell React Query its cached warmup result is stale so the next

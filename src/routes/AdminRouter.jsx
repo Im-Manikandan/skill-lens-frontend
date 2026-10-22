@@ -3,6 +3,8 @@ import { lazy } from 'react';
 import Loadable from '../layouts/loader/Loadable';
 import {Navigate} from "react-router";
 
+const AIUsageDashboard = Loadable(lazy(() => import("../pages/analytics/AIUsageDashboard.jsx")));
+
 // Lazy-Loaded Admin Pages
 const AdminDashboard = Loadable(lazy(() => import("../pages/admin/AdminDashboard")));
 const IndustriesManagement = Loadable(lazy(() => import("../pages/admin/industries/IndustriesManagement.jsx")));
@@ -18,6 +20,7 @@ const ClientSkillReadinessConfig = Loadable(lazy(() => import("../pages/admin/co
 
 // Admin Route Definitions
 export const AdminRouter = [
+    {path: "ai-usage", name: "AIUsageDashboard", element: <AIUsageDashboard audience="admin"/>},
     {
         path: 'dashboard',
         name: 'AdminDashboard',

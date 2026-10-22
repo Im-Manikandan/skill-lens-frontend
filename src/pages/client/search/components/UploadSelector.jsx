@@ -23,6 +23,9 @@ export default function UploadSelector({
   onDelete,
   disabled,
 }) {
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
+  const deletingRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [confirmingId, setConfirmingId] = useState(null);
   const [panelPos, setPanelPos] = useState(null);
@@ -60,6 +63,22 @@ export default function UploadSelector({
       window.removeEventListener('resize', onScrollOrResize);
     };
   }, [open]);
+
+  const deleteUpload = async (batchId) => {
+    if (deletingRef.current) return;
+    deletingRef.current = true;
+    setDeletingId(batchId);
+    setDeleteError(null);
+    try {
+      await onDelete(batchId);
+      setConfirmingId(null);
+    } catch (error) {
+      setDeleteError(error?.message || 'Could not delete upload. Try again.');
+    } finally {
+      deletingRef.current = false;
+      setDeletingId(null);
+    }
+  };
 
   const summaryLabel = allProfilesSelected
     ? `All Profiles (${totalProfileCount})`
@@ -113,6 +132,7 @@ export default function UploadSelector({
             padding: 6,
           }}
         >
+          {deleteError && <div role="alert" style={{padding:10,color:'#f87171',fontSize:12}}>{deleteError}</div>}
           {/* All Profiles */}
           <div
             role="button"
@@ -192,18 +212,20 @@ export default function UploadSelector({
                     <button
                       type="button"
                       title="Confirm delete"
-                      onClick={() => { onDelete(b.batchId); setConfirmingId(null); }}
+                      disabled={deletingId !== null}
+                      onClick={() => deleteUpload(b.batchId)}
                       style={{
                         background: 'rgba(248,113,113,0.15)', border: '1px solid rgba(248,113,113,0.3)',
                         borderRadius: 6, color: '#f87171', fontSize: 11, fontWeight: 600,
                         padding: '3px 8px', cursor: 'pointer',
                       }}
                     >
-                      Delete
+                      {deletingId === b.batchId ? 'Deleting…' : 'Delete'}
                     </button>
                     <button
                       type="button"
                       title="Cancel"
+                      disabled={deletingId !== null}
                       onClick={() => setConfirmingId(null)}
                       style={{
                         background: 'transparent', border: 'none', color: '#6b7280',
@@ -217,7 +239,8 @@ export default function UploadSelector({
                   <button
                     type="button"
                     title="Delete this upload"
-                    onClick={() => setConfirmingId(b.batchId)}
+                    disabled={deletingId !== null || b.status === 'processing'}
+                    onClick={() => {setDeleteError(null); setConfirmingId(b.batchId);}}
                     style={{
                       background: 'transparent', border: 'none', color: '#6b7280',
                       cursor: 'pointer', padding: 4, display: 'flex', flexShrink: 0,

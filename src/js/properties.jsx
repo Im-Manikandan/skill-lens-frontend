@@ -5,7 +5,7 @@ const properties = new Map();
 let config = {
 
     // serviceUrl: "https://app.skilllens.ai/skill-lens-service/routes/v1",
-     serviceUrl: "https://skill-lens-backend.onrender.com/routes/v1",
+     serviceUrl: import.meta.env.DEV ? '/api' : "https://skill-lens-backend.onrender.com/routes/v1",
     domainUrl: 'http://localhost:3000',
 
 

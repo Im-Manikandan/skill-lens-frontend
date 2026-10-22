@@ -28,6 +28,7 @@ export default function ClientSelect() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const compressedUserInfo = useSelector((state) => state.userInfo.userInfo);
+    const selectedClientInfo = useSelector((state) => state.clientInfo?.clientInfo);
     const userInfo = compressedUserInfo ? JSON.parse(decompressFflate(compressedUserInfo)) : null;
     const firstName = userInfo?.name?.split(' ')[0] || userInfo?.fullName?.split(' ')[0] || 'there';
 
@@ -68,11 +69,11 @@ export default function ClientSelect() {
 
     // Side Effects — Auto-redirect when exactly one client arrives (run once)
     useEffect(() => {
-        if (!autoRedirectedRef.current && clients.length === 1) {
+        if (!selectedClientInfo && !autoRedirectedRef.current && clients.length === 1) {
             autoRedirectedRef.current = true;
             handleAccess(clients[0]);
         }
-    }, [clients, handleAccess]);
+    }, [clients, handleAccess, selectedClientInfo]);
 
     return (
         <div className="tw:relative tw:min-h-[calc(100vh-70px)] tw:overflow-hidden">

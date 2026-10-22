@@ -349,6 +349,7 @@ export function ProfessionalSummary({ profile, resolvedSummary }) {
     setLoading(true);
     setSummaryError(false);
     InfographicController.generateSummary({
+      profile_id: Number.isSafeInteger(Number(profile.id)) && Number(profile.id) > 0 ? Number(profile.id) : undefined,
       name: profile.name,
       title: profile.title,
       level: profile.level,

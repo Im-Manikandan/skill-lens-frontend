@@ -1,6 +1,15 @@
 import conf_prop from '../properties/properties';
 import {classifyError, FetchUtils, UnauthorizedError} from '@devopsthink/react-security-util';
 import ApiUtils from "src/api/ApiUtils.jsx";
+import { store } from "../store/Store.js";
+import { resolveUsageApplication } from "../utils/aiUsageApplication.js";
+
+// Build identity wins for separate app deployments. Shared deployments use
+// authenticated login mode; URL paths never determine AI attribution.
+function usageApplication() {
+    return resolveUsageApplication(import.meta.env.VITE_AI_USAGE_APPLICATION,
+        store.getState().userType?.userType);
+}
 
 // Token Management
 function getToken() {
@@ -25,6 +34,8 @@ function clearToken() {
 // Auth Headers Builder
 function authHeaders(contentType = 'application/json') {
     const headers = {};
+    const application = usageApplication();
+    if (application) headers['X-Skill-Lens-Application'] = application;
     if (contentType) {
         headers['Content-Type'] = contentType;
     }
@@ -42,6 +53,9 @@ function authHeaders(contentType = 'application/json') {
 async function authFetch(path, options = {}) {
     const { suppressLogout = false, ...fetchOptions } = options;
     const url = `${conf_prop.get('serviceUrl')}${path}`;
+    const application = usageApplication();
+    fetchOptions.headers = new Headers(fetchOptions.headers);
+    if (application) fetchOptions.headers.set('X-Skill-Lens-Application', application);
 
     try {
         const response = await fetch(url, fetchOptions);
@@ -93,6 +107,8 @@ async function deleteJSON(path, options = {}) {
 
 async function postFormData(path, formData, options = {}) {
     const headers = {};
+    const application = usageApplication();
+    if (application) headers['X-Skill-Lens-Application'] = application;
     const token = getToken();
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
