@@ -1,0 +1,617 @@
+
+/*
+ * SKILL LENS AI — PREMIUM CHAT INTERFACE
+ * Internal chatbot styling only.
+ * Floating robot launcher intentionally untouched.
+ */
+
+.skill-lens-chat-window.skill-lens-premium {
+  --sl-ink: #141a23;
+  --sl-lime: #d7f000;
+  --sl-soft-lime: #f3f9d7;
+  --sl-surface: #ffffff;
+  --sl-canvas: #f5f7fa;
+  --sl-line: #e6eaf0;
+  --sl-muted: #697586;
+  --sl-shadow: 0 20px 65px rgba(18, 26, 40, .18);
+
+  background: var(--sl-surface);
+  border: 1px solid rgba(24, 32, 43, .08);
+  border-radius: 22px;
+  box-shadow: var(--sl-shadow);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+/* HEADER */
+
+.skill-lens-format-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.skill-lens-premium .skill-lens-format-badge,
+.skill-lens-generate-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.skill-lens-export-card-icon .skill-lens-format-icon {
+  width: 28px;
+  height: 30px;
+}
+
+.skill-lens-premium .skill-lens-stop-button,
+.skill-lens-premium .skill-lens-stop-button:hover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sl-ink);
+  color: white;
+  box-shadow: none;
+}
+
+.skill-lens-stop-square {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.skill-lens-premium .skill-lens-header {
+  min-height: 82px;
+  padding: 16px 20px;
+  background: linear-gradient(120deg, #10151e, #202a37);
+  border-bottom: 2px solid var(--sl-lime);
+  position: relative;
+}
+
+.skill-lens-premium .skill-lens-header::after {
+  content: "";
+  position: absolute;
+  right: 76px;
+  top: -45px;
+  width: 155px;
+  height: 155px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(215, 240, 0, .12),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.skill-lens-premium .skill-lens-header-logo {
+  width: 45px;
+  height: 45px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #edff66, #c8e600);
+  box-shadow: 0 5px 18px rgba(215, 240, 0, .2);
+}
+
+.skill-lens-premium .skill-lens-header-title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.45px;
+}
+
+.skill-lens-premium .skill-lens-header-title span {
+  color: var(--sl-lime);
+}
+
+.skill-lens-premium .skill-lens-header-status {
+  font-size: 11px;
+  color: #b8c2d0;
+  letter-spacing: .1px;
+}
+
+.skill-lens-premium .skill-lens-online-dot {
+  width: 7px;
+  height: 7px;
+  background: #baff67;
+  box-shadow: 0 0 0 4px rgba(186, 255, 103, .12);
+}
+
+.skill-lens-premium .skill-lens-header-button {
+  width: 35px;
+  height: 35px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 11px;
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  transition: background .2s, transform .2s;
+}
+
+.skill-lens-premium .skill-lens-header-button:hover {
+  background: rgba(255,255,255,.16);
+  transform: translateY(-1px);
+}
+
+/* CHAT BACKGROUND */
+
+.skill-lens-premium .skill-lens-messages {
+  background:
+    radial-gradient(
+      ellipse at top right,
+      rgba(215,240,0,.065),
+      transparent 50%
+    ),
+    #f5f7fa;
+  padding: 20px 18px;
+  scrollbar-width: thin;
+  scrollbar-color: #cfd5de transparent;
+}
+
+/* WELCOME SCREEN */
+
+.skill-lens-premium .skill-lens-welcome {
+  justify-content: center;
+  padding: 10px 0 20px;
+}
+
+.skill-lens-premium .skill-lens-welcome-robot {
+  width: 145px;
+  height: 145px;
+  margin-bottom: 10px;
+}
+
+.skill-lens-premium .skill-lens-welcome-robot svg {
+  width: 140px;
+  height: 140px;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,.08));
+}
+
+.skill-lens-premium .skill-lens-robot-glow {
+  background: rgba(215,240,0,.28);
+  filter: blur(28px);
+}
+
+.skill-lens-premium .skill-lens-welcome h2 {
+  margin: 8px 0 5px;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -.8px;
+  color: #17202d;
+}
+
+.skill-lens-premium .skill-lens-welcome h2 span {
+  color: #809500;
+}
+
+.skill-lens-premium .skill-lens-welcome p {
+  max-width: 320px;
+  margin: 8px auto;
+  font-size: 12.5px;
+  color: var(--sl-muted);
+  line-height: 1.7;
+}
+
+/* QUICK ACTION BUTTONS */
+
+.skill-lens-premium .skill-lens-suggestions {
+  max-width: 370px;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.skill-lens-premium .skill-lens-suggestions button {
+  position: relative;
+  width: 100%;
+  min-height: 49px;
+  padding: 13px 17px;
+  background: #fff;
+  color: #243044;
+  border: 1px solid #e1e6ee;
+  border-radius: 14px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 650;
+  box-shadow: 0 3px 12px rgba(18, 28, 44, .035);
+  transition:
+    background .2s,
+    border-color .2s,
+    transform .2s,
+    box-shadow .2s;
+}
+
+.skill-lens-premium .skill-lens-suggestions button::after {
+  content: "↗";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: #84909f;
+}
+
+.skill-lens-premium .skill-lens-suggestions button:hover {
+  background: #faffea;
+  border-color: #c4dc44;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(45, 61, 18, .09);
+}
+
+.skill-lens-premium .skill-lens-suggestions button:active {
+  transform: translateY(0);
+}
+
+/* CHAT MESSAGES */
+
+.skill-lens-premium .skill-lens-message-row {
+  margin-bottom: 17px;
+}
+
+.skill-lens-premium .skill-lens-message-row.assistant {
+  gap: 10px;
+}
+
+.skill-lens-premium .skill-lens-mini-avatar {
+  width: 31px;
+  height: 31px;
+  border-radius: 11px;
+  background: #17202c;
+  color: var(--sl-lime);
+  box-shadow: 0 3px 10px rgba(0,0,0,.1);
+}
+
+.skill-lens-premium .skill-lens-message-content {
+  max-width: 89%;
+}
+
+.skill-lens-premium .skill-lens-message-bubble {
+  padding: 13px 15px;
+  font-size: 12.5px;
+  line-height: 1.75;
+  border-radius: 16px;
+  overflow-wrap: anywhere;
+}
+
+.skill-lens-premium .skill-lens-message-bubble.assistant {
+  color: #273344;
+  background: #fff;
+  border: 1px solid #e4e9f0;
+  border-bottom-left-radius: 5px;
+  box-shadow: 0 4px 16px rgba(20,35,55,.045);
+}
+
+.skill-lens-premium .skill-lens-message-bubble.user {
+  color: #171e12;
+  background: linear-gradient(135deg, #e9fb68, #d7f000);
+  border: 1px solid #cce400;
+  border-bottom-right-radius: 5px;
+  box-shadow: 0 4px 12px rgba(169,190,0,.13);
+}
+
+/* EXPORT CARD */
+
+.skill-lens-premium .skill-lens-export-prompt {
+  padding: 15px;
+  margin-top: 14px;
+  background: #fbfcf7;
+  border: 1px solid #dfe8cb;
+  border-radius: 15px;
+}
+
+.skill-lens-premium .skill-lens-export-card-header {
+  gap: 10px;
+}
+
+.skill-lens-premium .skill-lens-export-card-icon {
+  width: 41px;
+  height: 41px;
+  background: #eaf5c7;
+  color: #314300;
+  border-radius: 12px;
+}
+
+.skill-lens-premium .skill-lens-export-card-header strong {
+  color: #202d3d;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.skill-lens-premium .skill-lens-export-description {
+  font-size: 12px;
+  color: #647185;
+}
+
+.skill-lens-premium .skill-lens-view-templates-button {
+  min-height: 39px;
+  padding: 10px 14px;
+  border-radius: 11px;
+  background: #19232e;
+  color: var(--sl-lime);
+  font-weight: 700;
+  transition: background .2s, transform .2s;
+}
+
+.skill-lens-premium .skill-lens-view-templates-button:hover {
+  background: #2d3a48;
+  transform: translateY(-1px);
+}
+
+.skill-lens-premium .skill-lens-format-badge {
+  padding: 7px 11px;
+  background: #eef2f6;
+  color: #586578;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+/* TEMPLATE SELECTION */
+
+.skill-lens-premium .skill-lens-export-panel {
+  padding: 13px;
+  background: #f5f7fb;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.skill-lens-premium .skill-lens-export-heading strong {
+  color: #243349;
+  font-size: 13px;
+}
+
+.skill-lens-premium .skill-lens-template-grid {
+  gap: 11px;
+}
+
+.skill-lens-premium .skill-lens-template-card {
+  padding: 10px;
+  border: 1px solid #e1e6ef;
+  border-radius: 13px;
+  background: #fff;
+  gap: 9px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.skill-lens-premium .skill-lens-template-card:hover {
+  border-color: #b5c4d7;
+  box-shadow: 0 6px 20px rgba(18,34,54,.06);
+}
+
+.skill-lens-premium .skill-lens-template-card.recommended {
+  border: 2px solid #b3d500;
+  box-shadow: 0 0 0 3px rgba(215,240,0,.08);
+}
+
+.skill-lens-premium .skill-lens-template-preview {
+  height: 135px;
+  background: #f2f5fa;
+  border-radius: 9px;
+}
+
+.skill-lens-premium .skill-lens-template-card strong {
+  color: #233149;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.skill-lens-premium .skill-lens-template-card p {
+  color: #758194;
+  font-size: 10.5px;
+}
+
+.skill-lens-premium .skill-lens-recommended {
+  color: #698000;
+  font-weight: 750;
+}
+
+.skill-lens-premium .skill-lens-generate-button {
+  min-height: 38px;
+  border-radius: 10px;
+  background: #19232e;
+  color: var(--sl-lime);
+  font-weight: 750;
+  transition: background .2s, transform .2s;
+}
+
+.skill-lens-premium .skill-lens-generate-button:hover:not(:disabled) {
+  background: #334251;
+  transform: translateY(-1px);
+}
+
+/* GENERATED FILE CARD */
+
+.skill-lens-premium .skill-lens-file-card {
+  padding: 14px;
+  background: #f7f9fc;
+  border: 1px solid #e0e7f0;
+  border-radius: 14px;
+}
+
+.skill-lens-premium .skill-lens-file-icon {
+  background: #e5f4a4;
+  border-radius: 12px;
+}
+
+.skill-lens-premium .skill-lens-file-details strong {
+  color: #243246;
+}
+
+.skill-lens-premium .skill-lens-file-download {
+  min-height: 39px;
+  background: #19232e;
+  color: var(--sl-lime);
+  border-radius: 10px;
+}
+
+.skill-lens-premium .skill-lens-file-download:hover {
+  background: #344150;
+}
+
+/* THINKING INDICATOR */
+
+.skill-lens-premium .skill-lens-thinking {
+  padding: 12px 15px;
+  background: #fff;
+  border: 1px solid #e4e9f0;
+  border-radius: 14px;
+  color: #657386;
+  box-shadow: 0 3px 12px rgba(20,35,55,.04);
+}
+
+.skill-lens-premium .skill-lens-thinking-dots span {
+  width: 6px;
+  height: 6px;
+  background: #b5d000;
+}
+
+/* MESSAGE COMPOSER */
+
+.skill-lens-premium .skill-lens-input-area {
+  padding: 13px 15px 11px;
+  background: #fff;
+  border-top: 1px solid #e7ecf2;
+  box-shadow: 0 -5px 18px rgba(20,35,55,.025);
+}
+
+.skill-lens-premium .skill-lens-input-wrapper {
+  min-height: 47px;
+  padding: 5px 5px 5px 14px;
+  background: #f8fafd;
+  border: 1px solid #dfe5ee;
+  border-radius: 15px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.skill-lens-premium .skill-lens-input-wrapper:focus-within {
+  border-color: #a8c600;
+  box-shadow: 0 0 0 4px rgba(215,240,0,.12);
+}
+
+.skill-lens-premium .skill-lens-input {
+  color: #243044;
+  font-size: 12.5px;
+}
+
+.skill-lens-premium .skill-lens-input::placeholder {
+  color: #9ba5b2;
+}
+
+.skill-lens-premium .skill-lens-send-button {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--sl-lime);
+  color: #172018;
+  font-size: 20px;
+  box-shadow: 0 3px 10px rgba(170,195,0,.16);
+  transition: transform .2s, background .2s;
+}
+
+.skill-lens-premium .skill-lens-send-button:hover:not(:disabled) {
+  background: #e6ff32;
+  transform: translateY(-1px);
+}
+
+.skill-lens-premium .skill-lens-send-button:disabled {
+  background: #e9edf2;
+  color: #a8b0bc;
+  box-shadow: none;
+}
+
+.skill-lens-premium .skill-lens-input-hint {
+  margin-top: 9px;
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.skill-lens-chat-window.skill-lens-premium,
+.skill-lens-premium *,
+.skill-lens-preview-overlay,
+.skill-lens-preview-overlay * {
+  box-sizing: border-box;
+}
+
+.skill-lens-preview-dialog button:focus-visible,
+.skill-lens-floating-button:focus-visible {
+  outline: 3px solid #a4c600;
+  outline-offset: 3px;
+}
+
+/* PREVIEW MODAL */
+
+.skill-lens-preview-dialog {
+  border: 1px solid #e1e7ee;
+  border-radius: 19px;
+  box-shadow: 0 25px 80px rgba(0,0,0,.22);
+}
+
+.skill-lens-preview-header strong {
+  color: #1e293b;
+  font-size: 16px;
+}
+
+/* ACCESSIBILITY */
+
+.skill-lens-premium button:focus-visible,
+.skill-lens-premium a:focus-visible {
+  outline: 3px solid #a4c600;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .skill-lens-premium .skill-lens-input {
+    font-size: 16px;
+  }
+  .skill-lens-premium .skill-lens-header {
+    padding: 13px 15px;
+  }
+
+  .skill-lens-premium .skill-lens-messages {
+    padding: 16px 13px;
+  }
+
+  .skill-lens-premium .skill-lens-template-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-lens-premium .skill-lens-welcome h2 {
+    font-size: 20px;
+  }
+}
+
+/* ChatGPT-style Stop button */
+
+.skill-lens-premium .skill-lens-stop-button,
+.skill-lens-premium .skill-lens-stop-button:hover {
+  background: #17202c;
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+}
+
+.skill-lens-premium .skill-lens-stop-button:hover {
+  background: #303d4e;
+}
+
+/* Professional format icons */
+
+.skill-lens-premium .skill-lens-export-card-icon {
+  background: #f2f5f9;
+  border: 1px solid #e6ebf2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.skill-lens-premium .skill-lens-header-button svg {
+  transition: transform 0.25s ease;
+}
+
+.skill-lens-premium .skill-lens-header-button:hover svg {
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-lens-premium *,
+  .skill-lens-premium *::before,
+  .skill-lens-premium *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

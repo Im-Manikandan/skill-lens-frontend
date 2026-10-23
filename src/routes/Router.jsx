@@ -8,6 +8,7 @@ import LoginClient from "../pages/auth/LoginClient.jsx";
 import {ClientRouter} from "src/routes/ClientRouter.jsx";
 import {AdminRouter} from "src/routes/AdminRouter.jsx";
 import ProtectedRoute from "src/routes/ProtectedRoute.jsx";
+import ClientChatbotLayout from '../layouts/ClientChatbotLayout';
 
 // Lazy-Loaded Layouts
 const FullLayout = Loadable(lazy(() => import('../layouts/FullLayout')));
@@ -45,15 +46,24 @@ const ThemeRoutes = [
         }],
     },
     // Protected Client Routes
-    {
-        path: '/client',
-        element: <ProtectedRoute requiredRole="client" />,
-        ErrorBoundary: RootErrorBoundary,
-        children: [{
+    
+{
+    path: '/client',
+    element: <ProtectedRoute requiredRole="client" />,
+    ErrorBoundary: RootErrorBoundary,
+    children: [
+        {
             Component: FullLayout,
-            children: ClientRouter,
-        }],
-    },
+            children: [
+                {
+                    Component: ClientChatbotLayout,
+                    children: ClientRouter,
+                },
+            ],
+        },
+    ],
+},
+
     // Auth Pages (Public)
     {
         path: '/auth',
