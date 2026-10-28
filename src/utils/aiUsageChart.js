@@ -1,4 +1,5 @@
 import {initialUsageChartRange, usagePeriodRange, usageRangeBounds, USAGE_PRESETS, istDate} from './aiUsagePeriods.js';
+import {completeTokenTotal} from './aiUsageTotals.js';
 
 const DAY = 86400000;
 const iso = date => date.toISOString().slice(0, 10);
@@ -17,7 +18,7 @@ export function usageChartRange(period, now = new Date()) {
 export function usageViewSelection(params, now = new Date()) {
   const saved = initialUsageChartRange(params, now);
   if (saved.source === 'custom') return {...saved, period: 'Custom Range'};
-  const period = USAGE_PRESETS.includes(params.get('period')) ? params.get('period') : 'Weekly';
+  const period = USAGE_PRESETS.includes(params.get('period')) ? params.get('period') : 'Today';
   return {...usageChartRange(period, now), source: 'period', period};
 }
 
@@ -89,6 +90,11 @@ function mergeTotals(totals) {
       ? values.reduce((sum, value) => sum + Number(value), 0) : null;
     result[field] = Number.isSafeInteger(total) ? total : null;
   }
+  const tokenTotals = totals.map(completeTokenTotal);
+  const tokenSum = tokenTotals.every(value => value !== null)
+    ? tokenTotals.reduce((sum, value) => sum + value, 0) : null;
+  result.total_tokens = Number.isSafeInteger(tokenSum) ? tokenSum : null;
+  result.total_tokens_complete = result.total_tokens !== null;
   for (const currency of ['usd', 'inr']) result[`total_cost_${currency}`] = sumUsageAmounts(totals.map(item => cost(item, currency)));
   return result;
 }

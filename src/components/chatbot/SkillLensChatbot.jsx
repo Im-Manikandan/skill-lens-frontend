@@ -1,6 +1,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { postJSON } from '../../api/fetch-helpers';
+import { useSelector } from 'react-redux';
+import { decompressFflate } from '@devopsthink/react-security-util';
+import { chatbotRequestBody, selectedChatClientId } from '../../utils/chatbotScope.js';
 import conf_prop from '../../properties/properties';
 import './SkillLensChatbotPremium.css';
 import ExportFormatIcon from './ExportFormatIcon';
@@ -64,7 +67,7 @@ const TEMPLATE_DETAILS = {
   },
 };
 
-const SkillLensChatbot = () => {
+const SkillLensChatbot = ({clientId}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
@@ -308,8 +311,18 @@ const SkillLensChatbot = () => {
     return parts;
   };
 
+  const ensureClientScope = () => {
+    if (clientId !== null) return true;
+    setMessages((previous) => [
+      ...previous,
+      {role: 'assistant', content: 'Select a client before using the chatbot.'},
+    ]);
+    return false;
+  };
+
   const sendMessage = async () => {
     if (!message.trim() || requestPendingRef.current) return;
+    if (!ensureClientScope()) return;
 
     requestPendingRef.current = true;
     const controller = new AbortController();
@@ -327,9 +340,7 @@ const SkillLensChatbot = () => {
     setIsThinking(true);
 
     try {
-      const data = await postJSON('/chat', {
-        question: userMessage,
-      }, { signal: controller.signal });
+      const data = await postJSON('/chat', chatbotRequestBody(userMessage, clientId), { signal: controller.signal });
 
       if (controller.signal.aborted || activeRequestRef.current !== controller) return;
 
@@ -366,6 +377,7 @@ const SkillLensChatbot = () => {
 
   const confirmExport = async (index, options, templateId) => {
     if (requestPendingRef.current) return;
+    if (!ensureClientScope()) return;
 
     requestPendingRef.current = true;
     const controller = new AbortController();
@@ -389,9 +401,9 @@ const SkillLensChatbot = () => {
     setIsThinking(true);
 
     try {
-      const data = await postJSON('/chat', {
-        question: `__artifact_export__:${JSON.stringify(payload)}`,
-      }, { signal: controller.signal });
+      const data = await postJSON('/chat', chatbotRequestBody(
+        `__artifact_export__:${JSON.stringify(payload)}`, clientId,
+      ), { signal: controller.signal });
 
       if (controller.signal.aborted || activeRequestRef.current !== controller) return;
 
@@ -1906,4 +1918,12 @@ const SkillLensChatbot = () => {
   );
 };
 
-export default SkillLensChatbot;
+const ClientScopedChatbot = () => {
+  const compressedClientInfo = useSelector((state) => state.clientInfo?.clientInfo);
+  const clientId = selectedChatClientId(compressedClientInfo, decompressFflate);
+  // Remount on tenant changes: abort old requests, discard prior-tenant chat
+  // and export state. A late response cannot populate the new client's chat.
+  return <SkillLensChatbot key={clientId ?? 'unselected'} clientId={clientId} />;
+};
+
+export default ClientScopedChatbot;
