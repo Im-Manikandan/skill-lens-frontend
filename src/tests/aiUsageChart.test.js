@@ -19,7 +19,7 @@ test('period selection synchronizes real calendar boundaries; custom selection s
   for (const clock of [now, new Date('2026-11-02T00:00:00Z')]) {
     assert.deepEqual(usageViewSelection(params, clock), {from: '2026-10-14', to: '2026-10-25', source: 'custom', period: 'Custom Range'});
   }
-  assert.equal(usageViewSelection(new URLSearchParams(), now).period, 'Weekly');
+  assert.equal(usageViewSelection(new URLSearchParams(), now).period, 'Today');
 });
 
 test('Today displays the complete current IST week with daily labels, not hours', () => {
@@ -186,4 +186,41 @@ test('Yearly uses seven year labels and annual totals instead of month values', 
   assert.equal(plan.length, 1);
   assert.equal(plan[0].start, '2025-12-31T18:30:00.000Z');
   assert.equal(plan[0].end, now.toISOString());
+});
+
+
+test('Today merges provider totals with legacy fallback without adding cached/reasoning tokens', () => {
+  const rows = [
+    {...totals(), label: '2026-10-22', total_tokens: 29, cached_tokens: 8, reasoning_tokens: 5},
+    {...totals(), label: '2026-10-22'},
+    {...totals(), label: '2026-10-21', total_tokens: 999},
+  ];
+  const summary = todayUsageSummary(data(rows, [{...totals(), label:'2026-10-22', total_tokens:31}]), '2026-10-22');
+  assert.equal(completeTokenTotal(summary.admin.totals), 44);
+  assert.equal(completeTokenTotal(summary.client.totals), 31);
+  assert.equal(completeTokenTotal(summary.admin.totals) + completeTokenTotal(summary.client.totals), 75);
+});
+
+test('merged totals cannot replace missing provider usage with a recorded subtotal', () => {
+  for (const missing of [
+    {...totals(), total_tokens: null, output_tokens:null, unknown_token_requests:1},
+    {...totals(), total_tokens:'invalid'},
+    {...totals(), total_tokens:Number.MAX_SAFE_INTEGER},
+  ]) {
+    const summary = todayUsageSummary(data([
+      {...totals(), label:'2026-10-22', total_tokens:29}, {...missing, label:'2026-10-22'},
+    ]), '2026-10-22');
+    assert.equal(completeTokenTotal(summary.admin.totals), null);
+  }
+});
+
+test('multi-year report merge preserves complete provider totals per interval', async () => {
+  const selection = {from:'2026-01-01', to:'2028-12-31', period:'Yearly'};
+  const result = await fetchUsageView(async url => {
+    const q = new URL(url, 'http://test').searchParams;
+    const year = Number(q.get('start').slice(0,4)) + 1;
+    return {...response(q), totals:{...totals(), total_tokens: year === 2026 ? 29 : null}};
+  }, selection, '42', undefined, new Date('2028-10-22T06:00:00Z'));
+  assert.equal(completeTokenTotal(result.admin.totals), 59);
+  assert.equal(completeTokenTotal(result.client.totals), 59);
 });

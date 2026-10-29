@@ -21,10 +21,12 @@ function Metric({title, value, icon: Icon, tone, tokens}) {
 function useUsageReport(companyId, selection, allowed) {
   const {from, to, period} = selection;
   const validRange = Number.isFinite(Date.parse(from)) && Number.isFinite(Date.parse(to)) && from <= to && (Date.parse(to) - Date.parse(from)) / 86400000 < (period === 'Yearly' ? 2558 : 731);
-  const grouping = period === 'Yearly' ? 'monthly' : 'daily';
+  const grouping = ['Monthly', 'Yearly'].includes(period) ? 'monthly' : 'daily';
   return useQuery({
-    queryKey: ['ai-dashboard', 'admin', 'combined-external-ist', companyId, from, to, grouping],
+    queryKey: ['ai-dashboard', 'admin', 'combined-external-ist', companyId, period, from, to, grouping],
     enabled: allowed && validRange, refetchOnMount: 'always', staleTime: 0, refetchInterval: 30000, retry: 1,
+    // Override app-wide disabled focus/reconnect refresh for live billing data.
+    refetchOnWindowFocus: 'always', refetchOnReconnect: 'always', refetchIntervalInBackground: true,
     queryFn: ({signal}) => fetchUsageView(getJSON, selection, companyId, AbortSignal.any([signal, AbortSignal.timeout(15000)])),
   });
 }
