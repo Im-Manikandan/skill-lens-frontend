@@ -122,6 +122,25 @@ async function postFormData(path, formData, options = {}) {
 }
 
 // Returns a Blob — bypasses FetchUtils.checkStatus JSON parsing.
+async function getBlob(path, options = {}) {
+    const { suppressLogout = false, ...fetchOptions } = options;
+    const response = await fetch(`${conf_prop.get('serviceUrl').replace(/\/$/, '')}${path}`, {
+        ...fetchOptions,
+        method: 'GET',
+        headers: authHeaders(null),
+    });
+    if (response.status === 401) {
+        if (!suppressLogout) {
+            clearToken();
+            window.location.href = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/auth/logout`;
+        }
+        throw new Error('Unauthorized');
+    }
+    if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+    return response.blob();
+}
+
+// Returns a Blob — bypasses FetchUtils.checkStatus JSON parsing.
 async function postBlob(path, body, options = {}) {
     const { suppressLogout = false } = options;
     const url = `${conf_prop.get('serviceUrl')}${path}`;
@@ -156,5 +175,6 @@ export {
     putJSON,
     deleteJSON,
     postFormData,
+    getBlob,
     postBlob,
 };

@@ -4,11 +4,11 @@
   "version": "0.1.2",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000 --host 0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview --port 3000 --host 0.0.0.0",
-    "build:sklens": "cross-env VITE_APP_ENV=sklens COMPRESS=false vite build --mode sklens",
-    "build:analyze": "cross-env ANALYZE=true vite build",
+    "dev": "vite --configLoader native --port 3000 --host 0.0.0.0",
+    "build": "vite build --configLoader native",
+    "preview": "vite preview --configLoader native --port 3000 --host 0.0.0.0",
+    "build:sklens": "cross-env VITE_APP_ENV=sklens COMPRESS=false vite build --configLoader native --mode sklens",
+    "build:analyze": "cross-env ANALYZE=true vite build --configLoader native",
     "lint:report": "eslint . -f html -o eslint-report.html || true",
     "lint:security:report": "eslint . -f html -o eslint-security-report.html || true"
   },
