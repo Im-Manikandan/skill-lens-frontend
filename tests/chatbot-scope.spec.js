@@ -78,3 +78,47 @@ test('missing selection sends no request; backend rejection is not retried under
   await expect(page.getByText('Sorry, I could not process your request.', {exact:true})).toBeVisible();
   expect(calls).toEqual([{question:'Forbidden client question', client_id:79}]);
 });
+
+for (const artifactUrl of ['/routes/v1/chat/artifacts/abc123', 'https://backend.example/service/routes/v1/chat/artifacts/abc123']) {
+  test(`artifact download uses authenticated API GET for ${artifactUrl}`, async ({page}) => {
+    let chats = 0;
+    const downloads = [];
+    await page.route('**/chat', async route => {
+      chats += 1;
+      await route.fulfill({json:{answer:`[Download PDF report](${artifactUrl})`,
+        artifact:{filename:'synthetic.pdf',mime_type:'application/pdf',artifact_id:'abc123'}}});
+    });
+    await page.route('**/chat/artifacts/abc123?**', async route => {
+      downloads.push({url:route.request().url(),headers:route.request().headers()});
+      await route.fulfill({contentType:'application/pdf',body:'%PDF-1.4\nSynthetic fixture'});
+    });
+    await openChat(page, 42);
+    await send(page, 'Synthetic result');
+    const link = page.locator('a.skill-lens-file-download');
+    await expect(link).toHaveAttribute('href','/api/chat/artifacts/abc123?client_id=42');
+    for (let i = 0; i < 2; i++) {
+      const saved = page.waitForEvent('download');
+      await link.click();
+      expect((await saved).suggestedFilename()).toBe('synthetic.pdf');
+    }
+    expect(chats).toBe(1);
+    expect(downloads).toHaveLength(2);
+    for (const download of downloads) {
+      expect(new URL(download.url).pathname).toBe('/api/chat/artifacts/abc123');
+      expect(download.headers.authorization).toMatch(/^Bearer /);
+      expect(download.headers['x-skill-lens-application']).toBe('client');
+    }
+  });
+}
+
+test('HTML fallback is never saved as a PDF', async ({page}) => {
+  await page.route('**/chat', route => route.fulfill({json:{answer:'[Download PDF report](/routes/v1/chat/artifacts/abc123)',artifact:{filename:'synthetic.pdf',mime_type:'application/pdf'}}}));
+  await page.route('**/chat/artifacts/abc123?**', route => route.fulfill({contentType:'text/html',body:'<html>Frontend</html>'}));
+  let downloads = 0;
+  page.on('download', () => downloads++);
+  await openChat(page, 42);
+  await send(page, 'Synthetic result');
+  await page.locator('a.skill-lens-file-download').click();
+  await expect(page.getByText('Unable to download the file. Please try again.',{exact:true})).toBeVisible();
+  expect(downloads).toBe(0);
+});

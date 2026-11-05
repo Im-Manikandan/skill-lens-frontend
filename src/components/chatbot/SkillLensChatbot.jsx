@@ -1,9 +1,10 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { postJSON } from '../../api/fetch-helpers';
+import { getBlob, postJSON } from '../../api/fetch-helpers';
 import { useSelector } from 'react-redux';
 import { decompressFflate } from '@devopsthink/react-security-util';
 import { chatbotRequestBody, selectedChatClientId } from '../../utils/chatbotScope.js';
+import { artifactDownloadPath, validateArtifactBlob } from '../../utils/chatbotArtifacts.js';
 import conf_prop from '../../properties/properties';
 import './SkillLensChatbotPremium.css';
 import ExportFormatIcon from './ExportFormatIcon';
@@ -83,11 +84,13 @@ const SkillLensChatbot = ({clientId}) => {
   const previewRef = useRef(null);
   const requestPendingRef = useRef(false);
   const activeRequestRef = useRef(null);
+  const downloadControllersRef = useRef(new Set());
   const wasOpenRef = useRef(false);
 
   useEffect(() => () => {
     activeRequestRef.current?.abort();
     activeRequestRef.current = null;
+    for (const controller of downloadControllersRef.current) controller.abort();
   }, []);
 
   const stopResponse = () => {
@@ -170,12 +173,28 @@ const SkillLensChatbot = ({clientId}) => {
     return FORMAT_NAMES[key] || key.toUpperCase();
   };
 
-  const getArtifactUrl = (artifactPath) => {
+  const downloadArtifact = async (artifactPath, artifact) => {
+    const controller = new AbortController();
+    downloadControllersRef.current.add(controller);
     try {
-      const serviceUrl = conf_prop.get('serviceUrl');
-      return new URL(artifactPath, new URL(serviceUrl).origin).href;
-    } catch {
-      return artifactPath;
+      const blob = await getBlob(artifactDownloadPath(artifactPath, clientId), {signal: controller.signal});
+      await validateArtifactBlob(blob, artifact?.mime_type);
+      if (controller.signal.aborted) return;
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = artifact?.filename || 'skill-lens-report';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      console.error('Artifact download failed:', error);
+      setMessages(previous => [...previous, {role: 'assistant', content: 'Unable to download the file. Please try again.'}]);
+    } finally {
+      downloadControllersRef.current.delete(controller);
     }
   };
 
@@ -238,19 +257,26 @@ const SkillLensChatbot = ({clientId}) => {
       .trim();
   };
 
-  const renderAssistantMessage = (content) => {
+  const renderAssistantMessage = (content, artifact) => {
     if (!content) return null;
 
     const text = String(content);
 
     const artifactRegex =
-      /\[([^\]]+)\]\((\/routes\/v1\/chat\/artifacts\/[^)]+)\)/g;
+      /\[([^\]]+)\]\(([^)\s]+)\)/g;
 
     const parts = [];
     let lastIndex = 0;
     let match;
 
     while ((match = artifactRegex.exec(text)) !== null) {
+      const artifactUrl = match[2];
+      let requestPath;
+      try {
+        requestPath = artifactDownloadPath(artifactUrl, clientId);
+      } catch {
+        continue;
+      }
       if (match.index > lastIndex) {
         const precedingText = text
           .slice(lastIndex, match.index)
@@ -286,9 +312,12 @@ const SkillLensChatbot = ({clientId}) => {
           </div>
 
           <a
-            href={getArtifactUrl(match[2])}
-            download
-            target="_blank"
+            href={`${conf_prop.get('serviceUrl').replace(/\/$/, '')}${requestPath}`}
+            download={artifact?.filename || true}
+            onClick={event => {
+              event.preventDefault();
+              downloadArtifact(artifactUrl, artifact);
+            }}
             rel="noopener noreferrer"
             className="skill-lens-file-download"
           >
@@ -1034,7 +1063,8 @@ const SkillLensChatbot = ({clientId}) => {
                           ? renderAssistantMessage(
                               msg.export_options
                                 ? cleanExportInstruction(msg.content)
-                                : msg.content
+                                : msg.content,
+                              msg.artifact,
                             )
                           : msg.content}
 
